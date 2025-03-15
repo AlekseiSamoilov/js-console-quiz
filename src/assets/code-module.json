@@ -1,0 +1,234 @@
+{
+    "blocks": {
+        "variables": [
+            {
+                "id": "var1",
+                "code": "let a = 5;\nconsole.log(a);",
+                "dependencies": [],
+                "provides": [
+                    "a"
+                ]
+            },
+            {
+                "id": "var2",
+                "code": "let b = 10;\nconsole.log(b);",
+                "dependencies": [],
+                "provides": [
+                    "b"
+                ]
+            },
+            {
+                "id": "var3",
+                "code": "let c = a + b;\nconsole.log(c);",
+                "dependencies": [
+                    "a",
+                    "b"
+                ],
+                "provides": [
+                    "c"
+                ]
+            },
+            {
+                "id": "var4",
+                "code": "let x = 20;\nlet y = 30;\nconsole.log(x, y);",
+                "dependencies": [],
+                "provides": [
+                    "x",
+                    "y"
+                ]
+            },
+            {
+                "id": "var5",
+                "code": "let str = 'Hello';\nlet num = 42;\nconsole.log(str, num);",
+                "dependencies": [],
+                "provides": [
+                    "str",
+                    "num"
+                ]
+            },
+            {
+                "id": "var6",
+                "code": "let a = 100;\nlet b = 'milk';\nconsole.log(a + b)",
+                "dependencies": [],
+                "provides": [
+                    "a",
+                    "b"
+                ]
+            }
+        ],
+        "reassignments": [
+            {
+                "id": "reassign1",
+                "code": "a = 7;\nconsole.log(a);",
+                "dependencies": [
+                    "a"
+                ],
+                "provides": []
+            },
+            {
+                "id": "reassign2",
+                "code": "b = a * 2;\nconsole.log(b);",
+                "dependencies": [
+                    "a",
+                    "b"
+                ],
+                "provides": []
+            },
+            {
+                "id": "reassign3",
+                "code": "x = x + 10;\nconsole.log(x);",
+                "dependencies": [
+                    "x"
+                ],
+                "provides": []
+            },
+            {
+                "id": "reassign4",
+                "code": "str = str + ' World';\nconsole.log(str);",
+                "dependencies": [
+                    "str"
+                ],
+                "provides": []
+            }
+        ],
+        "timers": [
+            {
+                "id": "timer1",
+                "code": "setTimeout(() => {\n  console.log('timeout');\n}, 0);",
+                "dependencies": [],
+                "provides": [],
+                "async": true
+            },
+            {
+                "id": "timer2",
+                "code": "setTimeout(() => {\n  a = a * 2;\n  console.log(a);\n}, 0);",
+                "dependencies": [
+                    "a"
+                ],
+                "provides": [],
+                "async": true
+            },
+            {
+                "id": "timer3",
+                "code": "setTimeout(() => {\n  console.log(x + y);\n}, 0);",
+                "dependencies": [
+                    "x",
+                    "y"
+                ],
+                "provides": [],
+                "async": true
+            }
+        ],
+        "promises": [
+            {
+                "id": "promise1",
+                "code": "Promise.resolve().then(() => {\n  console.log('promise');\n});",
+                "dependencies": [],
+                "provides": [],
+                "async": true,
+                "priority": 1
+            },
+            {
+                "id": "promise2",
+                "code": "Promise.resolve().then(() => {\n  b = b + 5;\n  console.log(b);\n});",
+                "dependencies": [
+                    "b"
+                ],
+                "provides": [],
+                "async": true,
+                "priority": 1
+            }
+        ],
+        "loops": [
+            {
+                "id": "loop1",
+                "code": "for (let i = 0; i < 3; i++) {\n  console.log(i);\n}",
+                "dependencies": [],
+                "provides": []
+            },
+            {
+                "id": "loop2",
+                "code": "let i = 0;\nwhile (i < 2) {\n  console.log(`while ${i}`);\n  i++;\n}",
+                "dependencies": [],
+                "provides": [
+                    "i"
+                ]
+            },
+            {
+                "id": "loop3",
+                "code": "let sum = 0;\nfor (let i = 1; i <= 3; i++) {\n  sum += i;\n  console.log(`sum: ${sum}`);\n}",
+                "dependencies": [],
+                "provides": [
+                    "sum"
+                ]
+            }
+        ],
+        "conditionals": [
+            {
+                "id": "if1",
+                "code": "if (a > 5) {\n  console.log('a > 5');\n} else {\n  console.log('a <= 5');\n}",
+                "dependencies": [
+                    "a"
+                ],
+                "provides": []
+            },
+            {
+                "id": "if2",
+                "code": "if (b === 10) {\n  console.log('b is 10');\n} else {\n  console.log('b is not 10');\n}",
+                "dependencies": [
+                    "b"
+                ],
+                "provides": []
+            },
+            {
+                "id": "if3",
+                "code": "let result = x > y ? 'x is bigger' : 'y is bigger';\nconsole.log(result);",
+                "dependencies": [
+                    "x",
+                    "y"
+                ],
+                "provides": [
+                    "result"
+                ]
+            }
+        ]
+    },
+    "complexityLevels": {
+        "easy": {
+            "blockCount": {
+                "min": 2,
+                "max": 3
+            },
+            "types": [
+                "variables",
+                "reassignments"
+            ]
+        },
+        "medium": {
+            "blockCount": {
+                "min": 3,
+                "max": 5
+            },
+            "types": [
+                "variables",
+                "reassignments",
+                "loops",
+                "conditionals"
+            ]
+        },
+        "hard": {
+            "blockCount": {
+                "min": 4,
+                "max": 6
+            },
+            "types": [
+                "variables",
+                "reassignments",
+                "loops",
+                "conditionals",
+                "timers",
+                "promises"
+            ]
+        }
+    }
+}
