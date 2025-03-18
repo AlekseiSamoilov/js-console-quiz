@@ -1,3 +1,5 @@
+const { output } = require("three/tsl");
+
 const originalConsole = {
     log: console.log,
     warn: console.warn,
@@ -35,4 +37,35 @@ console.info = (...args) => {
     const output = args.map(arg => String(arg)).join(' ');
     consoleOutput.push(`[INFO] ${output}`);
     originalConsole.info(output);
-}
+};
+
+self.addEventListener('message', event => {
+    const { code, id } = event.data;
+
+    consoleOutput = [];
+
+    try {
+        const timeoutId = setTimeout(() => {
+            throw new Error('Execution times out after 5 seconds');
+        }, 5000);
+
+        eval(code);
+
+        clearTimeout(timeoutId);
+
+        self.postMessage({
+            id,
+            status: 'success',
+            output: consoleOutput.join('\n')
+        });
+    } catch (error) {
+        self.postMessage({
+            id,
+            status: 'error',
+            error: error.message,
+            output: consoleOutput.join('\n')
+        });
+    }
+});
+
+self.postMessage({ status: 'ready' });
