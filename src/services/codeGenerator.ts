@@ -78,7 +78,7 @@ export const generateRandomTask = async (
     const availableTypes = complexityLevel.types;
 
     const selectedBlocks: ICodeBlock[] = [];
-    const availableVars: sstring[] = [];
+    const availableVars: string[] = [];
     const usedBlockIds: Set<string> = new Set();
 
     if (blocks.variables && blocks.variables.length > 0) {
@@ -96,6 +96,12 @@ export const generateRandomTask = async (
     }
 
     for (let i = selectedBlocks.length; i < blockCount; i++) {
+        const blockType = getRandomElement(availableTypes);
+
+        if (!blocks[blockType] || blocks[blockType].length === 0) {
+            continue;
+        }
+
         const validBlocks = blocks[blockType].filter(
             block => !usedBlockIds.has(block.id) && checkDependencies(block, availableVars)
         );
@@ -131,4 +137,19 @@ export const generateRandomTask = async (
     });
 
 
-}
+    let generatedCode = '';
+    selectedBlocks.forEach(block => {
+        generatedCode += block.code + '\n\n';
+    });
+
+    const task: ITask = {
+        id: `generated-${Date.now()}`,
+        code: generatedCode.trim()
+    };
+
+    return task;
+};
+
+export const generateTaskWithDifficulty = async (difficulty: 'easy' | 'medium' | 'hard'): Promise<ITask> => {
+    return generateRandomTask(difficulty);
+};
