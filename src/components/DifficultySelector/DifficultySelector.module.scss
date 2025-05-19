@@ -1,0 +1,95 @@
+@import '../../styles/variables.scss';
+
+.difficultSelector {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.label {
+    font-weight: 600;
+    margin-right: 15px;
+    color: $dark-text;
+}
+
+.options {
+    display: flex;
+    gap: 10px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    background-color: #f5f5f5;
+    border: 1px solid transparent;
+
+    &:hover {
+background-color: darken($color: f5f5f5, $amount: 5%);
+    }
+
+    &:selected {
+        background-color: rgba($color: $primary-color, $alpha: 0.1);
+        color: $primary-color;
+        font-weight: 500;
+    }
+
+    input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    .text {
+        font-size: 15px;
+    }
+}
+
+.option.selected {
+    &:has(input[value="easy"]) {
+        background-color: rgba($success-color, 0.1);
+        border-color: rgba($success-color, 0.3);
+        color: $success-color;
+    }
+    &:has(input[value="medium"]) {
+        background-color: rgba($color: $warning-color, $alpha: 0.1);
+        border-color: rgba($color: $warning-color, $alpha: 0.3);
+        color: darken($color: $warning-color, $amount: 5%);
+    }
+
+    &:has(input[value="hard"]) {
+        background-color: rgba($color: $error-color, $alpha: 0.1);
+        border-color: rgba($color: $error-color, $alpha: 0.3);
+        color: $error-color;
+    }
+}
+
+@media (max-width: 768px) {
+    .difficultSelector {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .label {
+        margin-bottom: 10px;
+    }
+
+    .options {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .option {
+        flex: 1;
+        justify-content: center;
+        padding: 6px 10px;
+
+        .text {
+            font-size: 13px;
+        }
+    }
+}
