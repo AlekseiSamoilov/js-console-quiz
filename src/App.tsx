@@ -2,6 +2,9 @@ import { useEffect, useState } from "react"
 import useCodeExecution from "./hooks/useCodeExecution";
 import { generateTaskWithDifficulty } from "./services/codeGenerator";
 import { ITask } from "./types";
+import styles from './App.module.scss'
+import DifficultySelector from "./components/DifficultySelector/DifficultySelector";
+import Header from "./components/Header/Header";
 
 const App: React.FC = () => {
   const [currentTask, setCurretTask] = useState<ITask | null>(null);
@@ -13,7 +16,7 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isInitialExecution, setIsInitialExecution] = useState<boolean>(false);
 
-  const { executeCode, loading: executionLoading } = useCodeExecution();
+  const { executeCode, loading: executionLoading, error } = useCodeExecution();
 
   // Загрузка задачи при первом рендере и при изменении сложности 
   useEffect(() => {
@@ -114,4 +117,64 @@ const App: React.FC = () => {
   if (!currentTask) {
     return <div className={styles.loading}>Не удалось загрузить задачу. Пожалуйста, обновите страницу.</div>
   }
+
+  return (
+    <div className={styles.app}>
+      <Header />
+      <main className={styles.main}>
+        <div className={styles.container}>
+          <DifficultySelector
+            value={difficulty}
+            onChange={handleDifficultyChange}
+            disabled={isSubmitted || loading}
+          />
+          <CodeDisplay code={currentTask.code} />
+
+          <div className={styles.answerSection}>
+            <AnswerInput
+              value={userAnswer}
+              onChange={setUserAnswer}
+              disabled={isSubmitted || loading}
+              placeholder='Введите ожидаемый вывод консоли...'
+            />
+
+            {isSubmitted ? (
+              <Button
+                onClick={handleSubmit}
+                disabled={loading || userAnswer.trim() === ''}
+                className={styles.submitButton}
+              >
+                {loading ? 'Загрузка...' : 'Проверить ответ'}
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSubmit}
+                className={styles.nextButton}
+              >
+                Следующая задача
+              </Button>
+            )}
+          </div>
+
+          {isSubmitted && result && (
+            <ResultDisplay
+              expectedOutput={result.output}
+              userAnswer={userAnswer}
+              isCorrect={result.isCorrect}
+            />
+          )}
+
+          {error && <div className={styles.error}>{error}</div>}
+
+          {loading && !isSubmitted && (
+            <div className={styles.loadingIndicator}>
+              {isInitialExecution ? 'Анализируем код...' : 'Загрузка...'}
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  )
 }
+
+export default App;
