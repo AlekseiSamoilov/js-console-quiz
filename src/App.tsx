@@ -95,4 +95,23 @@ const App: React.FC = () => {
     }
   };
 
+  const handleDifficultyChange = (newDifficulty: 'easy' | 'medium' | 'hard') => {
+    if (newDifficulty !== difficulty && !isSubmitted) {
+      setDifficulty(newDifficulty);
+    }
+  };
+
+  const handleNext = () => {
+    loadNewTask();
+  }
+
+  const loading = isLoading || executionLoading || isInitialExecution;
+
+  if (isLoading && !currentTask) {
+    return <div className={styles.loading}>Загрузка задачи...</div>;
+  }
+
+  if (!currentTask) {
+    return <div className={styles.loading}>Не удалось загрузить задачу. Пожалуйста, обновите страницу.</div>
+  }
 }
