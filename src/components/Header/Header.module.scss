@@ -1,0 +1,43 @@
+@import '../../styles/variables.scss';
+
+.header {
+  background-color: $header-bg;
+  color: white;
+  padding: 16px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.container {
+  max-width: $container-width;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.subtitle {
+  font-size: 14px;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 12px 0;
+  }
+  
+  .title {
+    font-size: 20px;
+  }
+  
+  .subtitle {
+    font-size: 12px;
+  }
+}
