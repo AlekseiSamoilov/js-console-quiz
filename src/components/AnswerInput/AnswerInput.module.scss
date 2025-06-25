@@ -1,0 +1,58 @@
+@import '../../styles/variables.scss';
+
+.aswerInput {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: $dark-text;
+    font-size: 16px;
+}
+
+.textarea {
+    width: 100%;
+    height: auto;
+    min-height: 80px;
+    padding: 12px;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    color: $input-text;
+    font-family: $mono-font;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow:  0 0 0 2px rgba($primary-color, 0.2);
+    }
+
+    &:disabled {
+        background-color: $disabled-bg;
+        cursor: not-allowed;
+        opacity: 0.8;
+    }
+}
+
+.hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: $secondary-color;
+}
+
+@media (max-width: 768px) {
+    .textarea {
+        min-height: 60px;
+        font-size: 13px;
+    }
+
+    .label {
+        font-size: 13px;
+    }
+}

@@ -5,6 +5,8 @@ import { ITask } from "./types";
 import styles from './App.module.scss'
 import DifficultySelector from "./components/DifficultySelector/DifficultySelector";
 import Header from "./components/Header/Header";
+import CodeDisplay from "./components/CodeDisplay/CodeDisplay";
+
 
 const App: React.FC = () => {
   const [currentTask, setCurretTask] = useState<ITask | null>(null);

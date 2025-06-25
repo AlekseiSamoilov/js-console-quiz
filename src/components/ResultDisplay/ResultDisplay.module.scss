@@ -85,10 +85,74 @@
     font-size: 13px;
     line-height: 1.5;
     padding: 10px;
-    border-radius: 4px;
+    border-radius: 4px;  
     overflow-x: auto;
     margin: 0;
     white-space: pre-wrap;
     word-break: brek-word;
+}
+
+.differences {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba($border-color, 0.6);
+}
+
+.diffHeader {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: $dark-text;
+}
+
+.diffList {
+    margin: 0;
+    padding: 0 0 0 20px;
+    list-style-type: none;
+}
+
+.diffItem {
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: $dark-text;
+    line-height: 1.5;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.lineNumber {
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.code {
+    font-family: $mono-font;
+    background-color: rgba($code-bg, 0.5);
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+    .resultDisplay {
+        padding: 12px;
+    }
+
+    .outputComparison {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .statusIcon {
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
+        margin-right: 12px;
+    }
+
+    .title {
+        font-size: 16px;
+    }
 }
 
