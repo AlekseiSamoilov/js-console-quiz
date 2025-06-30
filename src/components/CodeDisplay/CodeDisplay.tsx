@@ -17,8 +17,13 @@ const CodeDisplay: React.FC<ICodeDisplayProps> = ({ code, className }) => {
             .replace(/(setTimeout|Promise)/g, '<span class="async">$1</span>');
     }
     return (
-        <div>
-
+        <div className={`${styles.codeDisplay} ${className || ''}`}>
+            <div className={styles.header}>
+                <span className={styles.title}>Что выведется в консоль?</span>
+            </div>
+            <pre className={styles.codeBlock}>
+                <code dangerouslySetInnerHTML={{ __html: highlightSyntax(code) }} />
+            </pre>
         </div>
     )
 }
