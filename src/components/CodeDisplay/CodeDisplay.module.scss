@@ -14,3 +14,55 @@
     border-bottom: 1px solid $border-color;
 }
 
+.title {
+    color: $light-text;
+    font-family: $mono-font;
+    font-size: 14px;
+}
+
+.codeBlock {
+    background-color: $code-bg;
+    color: $code-text;
+    font-family: $mono-font;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 16px;
+    margin: 0;
+    overflow-x: auto;
+    tab-size: 2;
+
+    :global {
+    .keyword {
+        color: $keyword-color;
+    }
+
+    .string {
+        color: $string-color;
+    }
+
+    .number {
+        color: $number-color;
+    }
+
+    .comment {
+        color: $comment-color;
+        font-style: italic;
+    }
+
+    .console {
+        color: $console-color;
+    }
+
+    .async {
+        color: $async-color;
+        }
+    }   
+}
+
+@media (max-width: 768px) {
+    .codeBlock {
+        font-size: 13px;
+        padding: 12px;
+    }
+}
+
