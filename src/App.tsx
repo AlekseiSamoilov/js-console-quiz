@@ -6,6 +6,9 @@ import styles from './App.module.scss'
 import DifficultySelector from "./components/DifficultySelector/DifficultySelector";
 import Header from "./components/Header/Header";
 import CodeDisplay from "./components/CodeDisplay/CodeDisplay";
+import Button from "./components/Button/Button";
+import AnswerInput from "./components/AnswerInput/AnswerInput";
+import ResultDisplay from "./components/ResultDisplay/ResultDisplay";
 
 
 const App: React.FC = () => {
@@ -150,7 +153,7 @@ const App: React.FC = () => {
               </Button>
             ) : (
               <Button
-                onClick={handleSubmit}
+                onClick={handleNext}
                 className={styles.nextButton}
               >
                 Следующая задача

@@ -1,5 +1,3 @@
-const { output } = require("three/tsl");
-
 const originalConsole = {
     log: console.log,
     warn: console.warn,

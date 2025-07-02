@@ -4,7 +4,6 @@ let cachedBlocks: Record<string, ICodeBlock[]> | null = null;
 let cachedComplexityLevels: Record<string, IComplexityLevel> | null = null;
 
 // load blocks from json file
-
 export const loadCodeBlocks = async (): Promise<{
     blocks: Record<string, ICodeBlock[]>;
     complexityLevels: Record<string, IComplexityLevel>;
@@ -19,7 +18,7 @@ export const loadCodeBlocks = async (): Promise<{
     }
 
     try {
-        const response = await fetch('/assets/code-blocks.json');
+        const response = await fetch('/src/assets/code-module.json');
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

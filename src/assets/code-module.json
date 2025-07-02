@@ -48,11 +48,27 @@
             },
             {
                 "id": "var6",
-                "code": "let a = 100;\nlet b = 'milk';\nconsole.log(a + b)",
+                "code": "let a = 100;\nlet b = 'milk';\nconsole.log(a + b);",
                 "dependencies": [],
                 "provides": [
                     "a",
                     "b"
+                ]
+            },
+            {
+                "id": "var7",
+                "code": "let result = 'test';\nconsole.log(result);",
+                "dependencies": [],
+                "provides": [
+                    "result"
+                ]
+            },
+            {
+                "id": "var8",
+                "code": "let count = 0;\nconsole.log('count:', count);",
+                "dependencies": [],
+                "provides": [
+                    "count"
                 ]
             }
         ],
@@ -89,6 +105,14 @@
                     "str"
                 ],
                 "provides": []
+            },
+            {
+                "id": "reassign5",
+                "code": "count = count + 1;\nconsole.log('new count:', count);",
+                "dependencies": [
+                    "count"
+                ],
+                "provides": []
             }
         ],
         "timers": [
@@ -97,26 +121,29 @@
                 "code": "setTimeout(() => {\n  console.log('timeout');\n}, 0);",
                 "dependencies": [],
                 "provides": [],
-                "async": true
+                "async": true,
+                "priority": 2
             },
             {
                 "id": "timer2",
-                "code": "setTimeout(() => {\n  a = a * 2;\n  console.log(a);\n}, 0);",
+                "code": "setTimeout(() => {\n  a = a * 2;\n  console.log('timer a:', a);\n}, 0);",
                 "dependencies": [
                     "a"
                 ],
                 "provides": [],
-                "async": true
+                "async": true,
+                "priority": 2
             },
             {
                 "id": "timer3",
-                "code": "setTimeout(() => {\n  console.log(x + y);\n}, 0);",
+                "code": "setTimeout(() => {\n  console.log('x + y =', x + y);\n}, 0);",
                 "dependencies": [
                     "x",
                     "y"
                 ],
                 "provides": [],
-                "async": true
+                "async": true,
+                "priority": 2
             }
         ],
         "promises": [
@@ -130,7 +157,7 @@
             },
             {
                 "id": "promise2",
-                "code": "Promise.resolve().then(() => {\n  b = b + 5;\n  console.log(b);\n});",
+                "code": "Promise.resolve().then(() => {\n  b = b + 5;\n  console.log('promise b:', b);\n});",
                 "dependencies": [
                     "b"
                 ],
@@ -148,7 +175,7 @@
             },
             {
                 "id": "loop2",
-                "code": "let i = 0;\nwhile (i < 2) {\n  console.log(`while ${i}`);\n  i++;\n}",
+                "code": "let i = 0;\nwhile (i < 2) {\n  console.log('while', i);\n  i++;\n}",
                 "dependencies": [],
                 "provides": [
                     "i"
@@ -156,11 +183,17 @@
             },
             {
                 "id": "loop3",
-                "code": "let sum = 0;\nfor (let i = 1; i <= 3; i++) {\n  sum += i;\n  console.log(`sum: ${sum}`);\n}",
+                "code": "let sum = 0;\nfor (let i = 1; i <= 3; i++) {\n  sum += i;\n  console.log('sum:', sum);\n}",
                 "dependencies": [],
                 "provides": [
                     "sum"
                 ]
+            },
+            {
+                "id": "loop4",
+                "code": "for (let j = 1; j <= 2; j++) {\n  console.log('loop j:', j);\n}",
+                "dependencies": [],
+                "provides": []
             }
         ],
         "conditionals": [
@@ -190,6 +223,14 @@
                 "provides": [
                     "result"
                 ]
+            },
+            {
+                "id": "if4",
+                "code": "if (str) {\n  console.log('str exists:', str);\n}",
+                "dependencies": [
+                    "str"
+                ],
+                "provides": []
             }
         ]
     },
