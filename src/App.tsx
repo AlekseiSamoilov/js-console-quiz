@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import useCodeExecution from "./hooks/useCodeExecution";
 import { generateTaskWithDifficulty } from "./services/codeGenerator";
 import { ITask } from "./types";
@@ -28,50 +28,56 @@ const App: React.FC = () => {
     loadNewTask();
   }, [difficulty]);
 
-  // Выполняем код для получения ожидаемого результата после создания задачи
-  useEffect(() => {
-    if (currentTask && currentTask.code && !expectedOutput && !isInitialExecution) {
-      getExpextedOutput(currentTask.code);
+  const getExpextedOutput = useCallback(async (code: string, taskId: string) => {
+    if (!currentTask || currentTask.id !== taskId) {
+      return;
     }
-  }, [currentTask, expectedOutput, isInitialExecution]);
 
-
-  const getExpextedOutput = async (code: string) => {
     setIsInitialExecution(true);
     try {
       const output = await executeCode(code);
-      setExpectedOutput(output.trim())
+
+      if (currentTask && currentTask.id === taskId) {
+        setExpectedOutput(output.trim());
+      }
     } catch (err) {
-      console.error("Error execution code for expected output", err);
+      console.error("Error executing code to get expected output", err);
+
+      if (currentTask && currentTask.id === taskId) {
+        setExpectedOutput('');
+      }
     } finally {
       setIsInitialExecution(false);
     }
-  };
+  }, [executeCode, currentTask])
 
-  const loadNewTask = async () => {
+  const loadNewTask = useCallback(async () => {
     setIsLoading(true);
-    setExpectedOutput(''); // Сбрасываем ожидаемый вывод при загрузке новой задачи
+    setExpectedOutput('');
+    setUserAnswer('');
+    setIsSubmitted(false);
+    setResult(null);// Сбрасываем ожидаемый вывод при загрузке новой задачи
 
     try {
       const task = await generateTaskWithDifficulty(difficulty);
       setCurretTask(task);
-      setUserAnswer('');
-      setIsSubmitted(false);
-      setResult(null);
+
+      setTimeout(() => {
+        getExpextedOutput(task.code, task.id);
+      }, 100)
     } catch (err) {
       console.error('Error loading task', err)
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [difficulty, getExpextedOutput]);
 
   const handleSubmit = async () => {
     if (!currentTask || executionLoading || isLoading || isInitialExecution) return;
 
+    setIsSubmitted(true)
     // Используем предвартельно полученный ожидаемый вывод вместо повторного выполнения кода
-    if (expectedOutput) {
-      setIsSubmitted(true);
-
+    if (expectedOutput !== '') {
       // Нормализуем обе строки для сравнения
       const normalizedExpectedOutput = expectedOutput.trim();
       const normalizedUserAnswer = userAnswer.trim();
@@ -82,8 +88,6 @@ const App: React.FC = () => {
       });
     } else {
       // Если ожидаемвй вывод не получен, выполняем код снова
-      setIsSubmitted(true);
-
       try {
         const output = await executeCode(currentTask.code);
         const normalizedOutput = output.trim();
@@ -104,7 +108,7 @@ const App: React.FC = () => {
   };
 
   const handleDifficultyChange = (newDifficulty: 'easy' | 'medium' | 'hard') => {
-    if (newDifficulty !== difficulty && !isSubmitted) {
+    if (newDifficulty !== difficulty && !isSubmitted && !isLoading && isInitialExecution) {
       setDifficulty(newDifficulty);
     }
   };
