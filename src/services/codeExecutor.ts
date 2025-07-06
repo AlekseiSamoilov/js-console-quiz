@@ -5,72 +5,169 @@ class CodeExecutorService {
         resolve: (value: string) => void;
         reject: (reason: any) => void;
     }>();
+    private initializationPromise: Promise<void> | null = null;
+    private workerSupported: boolean = true;
 
     constructor() {
-        this.initWorker();
+        this.checkWorkerSupport();
+        if (this.workerSupported) {
+            this.initWorker();
+        }
+    }
+
+    private checkWorkerSupport(): void {
+        this.workerSupported = typeof window !== 'undefined' &&
+            typeof Worker !== 'undefined' &&
+            window.location.protocol !== 'file:';
     }
 
     private initWorker() {
-        if (typeof window === 'undefined' || typeof Worker === 'undefined') {
+        if (!this.workerSupported) {
             return;
         }
 
-        try {
-            this.worker = new Worker('/worker.js');
+        this.initializationPromise = new Promise((resolve, reject) => {
+            try {
+                this.worker = new Worker('/worker.js');
 
-            this.worker.addEventListener('message', (event) => {
-                const { id, status, output, error } = event.data;
-
-                if (status === 'ready') {
-                    this.isWorkerReady = true;
-                    return;
-                }
-
-                const promise = this.pendingPromises.get(id);
-                if (promise) {
-                    if (status === 'success') {
-                        promise.resolve(output);
-                    } else {
-                        promise.reject(new Error(error || 'Execution failed'));
+                const initTimeout = setTimeout(() => {
+                    if (!this.isWorkerReady) {
+                        console.warn('Worker initialization timeout');
+                        this.workerSupported = false;
+                        reject(new Error('Worker initialization timeout'));
                     }
-                    this.pendingPromises.delete(id);
-                }
-            });
+                }, 10000);
 
-            this.worker.addEventListener('error', (event) => {
-                console.error('Worker error:', event);
+                this.worker.addEventListener('message', (event) => {
+                    const { id, status, output, error } = event.data;
 
-                this.pendingPromises.forEach((promise) => {
-                    promise.reject(new Error('Worker failed: ' + event.message));
+                    if (status === 'ready') {
+                        this.isWorkerReady = true;
+                        clearTimeout(initTimeout);
+                        resolve();
+                        return;
+                    }
+
+                    const promise = this.pendingPromises.get(id);
+                    if (promise) {
+                        if (status === 'success') {
+                            promise.resolve(output || '');
+                        } else {
+                            promise.reject(new Error(error || 'Execution failed'));
+                        }
+                        this.pendingPromises.delete(id);
+                    }
                 });
-                this.pendingPromises.clear();
 
-                this.worker?.terminate();
-                this.worker = null;
-                this.isWorkerReady = false;
-                this.initWorker();
-            });
+                this.worker.addEventListener('error', (event) => {
+                    console.error('Worker error:', event);
+                    clearTimeout(initTimeout);
+
+                    this.pendingPromises.forEach((promise) => {
+                        promise.reject(new Error('Worker failed: ' + event.message));
+                    });
+                    this.pendingPromises.clear();
+
+                    if (!this.isWorkerReady) {
+                        this.workerSupported = false;
+                        reject(new Error('Worker failed to initialize'));
+                    }
+
+                    this.cleanup();
+                });
+
+            } catch (error) {
+                console.error('Failed to initialize worker: ', error);
+                this.workerSupported = false;
+                reject(error);
+            }
+        });
+    }
+
+    private cleanup() {
+        if (this.worker) {
+            this.worker.terminate();
+            this.worker = null;
+        }
+        this.isWorkerReady = false;
+        this.initializationPromise = null;
+    }
+
+    private executeFallback(code: string): string {
+        const consoleOutput: string[] = [];
+
+        const originalConsole = {
+            log: console.log,
+            warn: console.warn,
+            error: console.error,
+            info: console.info
+        };
+
+        const mockConsole = {
+            log: (...args: any[]) => {
+                const output = args.map(arg => {
+                    if (typeof arg === 'object') {
+                        try {
+                            return JSON.stringify(arg);
+                        } catch {
+                            return String(arg);
+                        }
+                    }
+                    return String(arg);
+                }).join(' ');
+                consoleOutput.push(output);
+                originalConsole.log(output);
+            },
+            warn: (...args: any[]) => {
+                const output = args.map(arg => String(arg)).join(' ');
+                consoleOutput.push(`[WARN] ${output}`);
+                originalConsole.warn(output);
+            },
+            error: (...args: any[]) => {
+                const output = args.map(arg => String(arg)).join(' ');
+                consoleOutput.push(`[ERROR] ${output}`);
+                originalConsole.error(output);
+            },
+            info: (...args: any[]) => {
+                const output = args.map(arg => String(arg)).join(' ');
+                consoleOutput.push(`[INFO] ${output}`);
+                originalConsole.info(output);
+            }
+        };
+
+        try {
+            // Создаем функцию с локальным scope
+            const executeFunction = new Function('console', code);
+            executeFunction(mockConsole);
+
+            return consoleOutput.join('\n');
         } catch (error) {
-            console.error('Failed to initialize worker: ', error);
+            console.error('Fallback execution error:', error);
+            return `Error: ${error instanceof Error ? error.message : 'Unknown error'}`;
         }
     }
 
     public async executeCode(code: string): Promise<string> {
-        if (!this.worker) {
-            throw new Error('Web Worker not available');
+        // Если Worker не поддерживается, используем fallback
+        if (!this.workerSupported) {
+            console.warn('Using fallback execution method');
+            return this.executeFallback(code);
         }
 
-        if (!this.isWorkerReady) {
-            await new Promise<void>((resolve) => {
-                const checkReady = () => {
-                    if (this.isWorkerReady) {
-                        resolve();
-                    } else {
-                        setTimeout(checkReady, 50);
-                    }
-                };
-                checkReady();
-            });
+        // Ждем инициализации worker'а
+        if (this.initializationPromise) {
+            try {
+                await this.initializationPromise;
+            } catch (error) {
+                console.warn('Worker initialization failed, using fallback');
+                this.workerSupported = false;
+                return this.executeFallback(code);
+            }
+        }
+
+        if (!this.worker || !this.isWorkerReady) {
+            console.warn('Worker not ready, using fallback');
+            return this.executeFallback(code);
         }
 
         const id = Date.now().toString() + Math.random().toString().substring(2);
@@ -80,24 +177,40 @@ class CodeExecutorService {
 
             const timeoutId = setTimeout(() => {
                 this.pendingPromises.delete(id);
-                reject(new Error('Execution timed out after 10 seconds'));
-            }, 10000);
+                reject(new Error('Code execution timed out'));
+            }, 15000);
 
             const originalResolve = resolve;
-            resolve = ((value: string) => {
+            const originalReject = reject;
+
+            const wrappedResolve = (value: string) => {
                 clearTimeout(timeoutId);
                 originalResolve(value);
-            }) as typeof resolve;
+            };
+
+            const wrappedReject = (reason: any) => {
+                clearTimeout(timeoutId);
+                originalReject(reason);
+            };
+
+            this.pendingPromises.set(id, {
+                resolve: wrappedResolve,
+                reject: wrappedReject
+            });
         });
 
-        this.worker.postMessage({ code, id });
-        return promise;
+        try {
+            this.worker.postMessage({ code, id });
+            return await promise;
+        } catch (error) {
+            this.pendingPromises.delete(id);
+            console.warn('Worker execution failed, using fallback');
+            return this.executeFallback(code);
+        }
     }
 
     public terminate() {
-        this.worker?.terminate();
-        this.worker = null;
-        this.isWorkerReady = false;
+        this.cleanup();
         this.pendingPromises.clear();
     }
 }

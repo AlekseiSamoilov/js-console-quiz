@@ -12,7 +12,7 @@ import ResultDisplay from "./components/ResultDisplay/ResultDisplay";
 
 
 const App: React.FC = () => {
-  const [currentTask, setCurretTask] = useState<ITask | null>(null);
+  const [currentTask, setCurrentTask] = useState<ITask | null>(null);
   const [expectedOutput, setExpectedOutput] = useState<string>('');
   const [userAnswer, setUserAnswer] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
@@ -60,7 +60,7 @@ const App: React.FC = () => {
 
     try {
       const task = await generateTaskWithDifficulty(difficulty);
-      setCurretTask(task);
+      setCurrentTask(task);
 
       setTimeout(() => {
         getExpextedOutput(task.code, task.id);
@@ -108,7 +108,7 @@ const App: React.FC = () => {
   };
 
   const handleDifficultyChange = (newDifficulty: 'easy' | 'medium' | 'hard') => {
-    if (newDifficulty !== difficulty && !isSubmitted && !isLoading && isInitialExecution) {
+    if (newDifficulty !== difficulty && !isSubmitted && !isLoading && !isInitialExecution) {
       setDifficulty(newDifficulty);
     }
   };
@@ -147,7 +147,7 @@ const App: React.FC = () => {
               placeholder='Введите ожидаемый вывод консоли...'
             />
 
-            {isSubmitted ? (
+            {!isSubmitted ? (
               <Button
                 onClick={handleSubmit}
                 disabled={loading || userAnswer.trim() === ''}

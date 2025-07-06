@@ -13,7 +13,12 @@ const useCodeExecution = (): IUseCodeExecutionReturn => {
 
     useEffect(() => {
         return () => {
-            codeExecutorService.terminate();
+            try {
+                codeExecutorService.terminate();
+            } catch (err) {
+                console.warn("Error terminating code executor serivice:", err)
+            }
+
         };
     }, []);
 
@@ -23,9 +28,10 @@ const useCodeExecution = (): IUseCodeExecutionReturn => {
 
         try {
             const result = await codeExecutorService.executeCode(code);
-            return result;
+            return result || '';
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+            console.error("Code execution error:", errorMessage)
             setError(errorMessage);
             throw err;
         } finally {
