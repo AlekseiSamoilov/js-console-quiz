@@ -49,4 +49,4 @@ class Settings(BaseSettings):
             f"{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
         )
     
-    settings = Settings()
+settings = Settings()
