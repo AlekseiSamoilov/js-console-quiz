@@ -96,4 +96,20 @@ class SessionService:
         logger.info(f"Updated stats for session {token[:12]}...: "
                    f"tasks={session.total_tasks}, correct={session.correct_answers}, "
                    f"streak={session.current_streak}")
+        
+    @statticmethod
+    async def update_preferences(
+        db: AsyncSession,
+        token: str,
+        preferences: Dict[str, Any]
+    ) -> Optional[AnonymousSession]:
+        session = await SessionService.get_session(db, token)
+        if not session:
+            return None
+        
+        session.preference = {**session.preference, **preferences}
+        await db.commit()
+        await db.refresh(session)
+
+        return session
             
