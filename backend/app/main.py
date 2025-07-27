@@ -14,7 +14,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 @asynccontextmanager
-async def lifespan(app: FastAPU):
+async def lifespan(app: FastAPI):
     logger.info("Starting up application...")
     await init_db()
     logger.info("Database initialized.")
