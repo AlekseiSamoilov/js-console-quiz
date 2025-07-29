@@ -7,49 +7,60 @@ from app.core.config import settings
 from app.core.database import init_db, close_db
 from app.api.v1.api import api_router
 
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Starting up application...")
+    # Startup
+    logger.info("Starting up JS Console Quiz API...")
     await init_db()
-    logger.info("Database initialized.")
+    logger.info("Database initialized successfully")
     yield
-    logger.info("Shutting down application...")
+    # Shutdown
+    logger.info("Shutting down...")
     await close_db()
 
+
 app = FastAPI(
-    title=settings.PRJECT_NAME,
+    title=settings.PROJECT_NAME,
     version=settings.VERSION,
     description=settings.DESCRIPTION,
-    openapi_url=f"{settings.API_V1_STR}/openap.json",
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan
 )
 
-app.app_middleware(
+# Configure CORS
+app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=settings.allowed_origins_list,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
+# Include API router
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
 
 @app.get("/")
 async def root():
+    """Root endpoint"""
     return {
         "message": "JS Console Quiz API",
         "version": settings.VERSION,
-        "docs": "/docs",
+        "docs": "/docs"
     }
 
-@app.get("ping")
+
+@app.get("/ping")
 async def ping():
+    """Simple ping endpoint for health checks"""
     return {"status": "pong"}
