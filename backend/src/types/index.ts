@@ -6,7 +6,7 @@ export interface ICodeBlock {
     consoleOutput: string[];
     asyncOutput?: string[];
     async?: boolean;
-    proirity?: number;
+    priority?: number;
 }
 
 export interface IBlockCategories {
@@ -18,7 +18,7 @@ export interface IBlockCategories {
     conditionals: ICodeBlock[];
 }
 
-export interface IComplexityLevels {
+export interface IComplexityConfig {
     blockCount: {
         min: number;
         max: number;
@@ -26,17 +26,23 @@ export interface IComplexityLevels {
     types: (keyof IBlockCategories)[];
 }
 
-export interface IBlockData {
+export type TDifficulty = 'easy' | 'medium' | 'hard';
+
+export interface IComplexityLevels {
+    easy: IComplexityConfig;
+    medium: IComplexityConfig;
+    hard: IComplexityConfig;
+}
+
+export interface IBlocksData {
     blocks: IBlockCategories;
     complexityLevels: IComplexityLevels;
 }
 
 export interface IGeneratedTask {
     id: string;
-    difficulty: keyof IComplexityLevels;
+    difficulty: TDifficulty;
     blocks: ICodeBlock[];
     expectedOutput: string[];
     code: string;
 }
-
-export type Difficulty = keyof IComplexityLevels
